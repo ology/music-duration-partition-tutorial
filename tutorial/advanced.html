@@ -1,0 +1,381 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat"><html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
+		<title>
+			Music-Duration-Partition — Advanced
+		</title>
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1680993301" rel="stylesheet" />
+		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
+	</head>
+	<body class="page from-pod" id="top">
+		<header>
+			<nav class="navbar navbar-expand-lg">
+				<div class="container">
+					<a class="navbar-brand" href="https://ology.github.io/music-duration-partition-tutorial/">Music-Duration-Partition</a>
+					<button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+							<li class="nav-item">
+								<a class="nav-link" href="https://ology.github.io/music-duration-partition-tutorial/installation.html" rel="related" target="_self">Installation</a>
+							</li>
+							<li class="nav-item dropdown">
+								<a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Tutorial</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a class="dropdown-item" href="https://ology.github.io/music-duration-partition-tutorial/tutorial/quickstart.html" rel="related" target="_self">
+											<i class="fa-solid fa-bicycle"></i>
+											Quick-start
+										</a>
+									</li>
+									<li>
+										<a class="dropdown-item active" href="https://ology.github.io/music-duration-partition-tutorial/tutorial/advanced.html" rel="related" target="_self">
+											<i class="fa-solid fa-jet-fighter"></i>
+											Advanced
+										</a>
+									</li>
+								</ul>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="https://metacpan.org/dist/Music-Duration-Partition" rel="related" target="_blank">
+									<i class="fa-solid fa-circle-dot"></i>
+									On CPAN
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="https://github.com/ology/Music-Duration-Partition" rel="related" target="_blank">
+									<i class="fa-brands fa-github"></i>
+									On GitHub
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<main>
+			<div class="heading container py-3">
+				<h1 class="display-2">
+					Advanced
+				</h1>
+			</div>
+			<article class="container">
+				<span id="___top"></span>
+				<h2>
+					<span id="Version">
+						Version
+					</span>
+				</h2>
+				<p>
+					version 0.0807
+				</p>
+				<h2>
+					<span id="Usage_Examples">
+						Usage Examples
+					</span>
+				</h2>
+				<h3>
+					<span id="Shuffling_the_Motif">
+						Shuffling the Motif
+					</span>
+				</h3>
+				<p>
+					By shuffling a single generated motif, you can get the permutations of the durations.
+				</p>
+				<pre><code>  use List::Util qw(shuffle);
+  use MIDI::Util qw(setup_score);
+  use Music::Duration::Partition ();
+  use Music::Scales qw(get_scale_MIDI);
+
+  my $score = setup_score(bpm =&gt; 90);
+
+  my @scale = get_scale_MIDI('A', 3, 'pminor');
+
+  # instantiate a 4 beat phrase generator
+  my $mdp = Music::Duration::Partition-&gt;new(
+      size =&gt; 4,
+      pool =&gt; [qw(qn en sn)],
+      #pool =&gt; [qw(twn thn tqn ten tsn)],
+  );
+
+  # get a single motif of note durations
+  my $motif = $mdp-&gt;motif;
+
+  # repeat 2 measures, 8 times
+  for my $i (1 .. 8) {
+      # get a fresh set of random scale pitches for the motif
+      my @voices = map { $scale[ int rand @scale ] } 0 .. $#$motif;
+
+      # every other measure, shuffle the motif durations
+      my @phrase = $i % 2 ? @$motif : shuffle @$motif;
+
+      $mdp-&gt;add_to_score($score, \@phrase, \@voices);
+
+      $score-&gt;r('wn');
+  }
+
+  $score-&gt;write_score('shuffled.mid');</code></pre>
+				<h3>
+					<span id="Computing_Voices">
+						Computing Voices
+					</span>
+				</h3>
+				<p>
+					Play the same motif but with different voices computed by the Voss method.
+				</p>
+				<pre><code>  use MIDI::Util qw(setup_score);
+  use Music::Duration::Partition ();
+  use Music::Scales qw(get_scale_MIDI);
+  use Music::Voss qw(powers);
+
+  my $score = setup_score(bpm =&gt; 90);
+
+  my $mdp = Music::Duration::Partition-&gt;new(
+      size =&gt; 4,
+      pool =&gt; [qw(qn en sn)],
+  );
+
+  my $motif = $mdp-&gt;motif;
+
+  # get the scale and compute the generating function
+  my ($scale, $genf) = voss('A', 5, 'minor');
+
+  for my $i (1 .. 8) {
+      my @voices = map { $scale-&gt;[ $genf-&gt;($_) % @$scale ] } 0 .. $#$motif;
+
+      $mdp-&gt;add_to_score($score, $motif, \@voices);
+
+      $score-&gt;r('wn');
+  }
+
+  $score-&gt;write_score('shuffled.mid');
+
+  sub voss {
+      my ($note, $octave, $named) = @_;
+
+      my @scale = get_scale_MIDI($note, $octave, $named);
+
+      my $seed = [ map { sub { int rand 2 } } @scale ];
+      my $genf = powers(calls =&gt; $seed);
+
+      return \@scale, $genf;
+  }</code></pre>
+				<h3>
+					<span id="Weights_and_Grouping">
+						Weights and Grouping
+					</span>
+				</h3>
+				<p>
+					Triplet durations will be twice as likely to be chosen, and be played in groups of 3.
+				</p>
+				<pre><code>  use MIDI::Util qw(setup_score);
+  use Music::Duration::Partition ();
+  use Music::Scales qw(get_scale_MIDI);
+
+  my $score = setup_score(bpm =&gt; 120);
+
+  my @scale = get_scale_MIDI('C', 4, 'major');
+
+  my $mdp = Music::Duration::Partition-&gt;new(
+      size    =&gt; 8,
+      pool    =&gt; [qw(hn qn ten)],
+      weights =&gt; [   1, 1, 2   ],
+      groups  =&gt; [   1, 1, 3   ],
+      verbose =&gt; 1,
+  );
+
+  my $motif = $mdp-&gt;motif;
+
+  for my $i (1 .. 4) {
+      for my $n (0 .. $#$motif) {
+          $score-&gt;n($motif-&gt;[$n], $scale[ int rand @scale ]);
+      }
+  }
+
+  $score-&gt;n('wn', $scale[0]);</code></pre>
+				<h3>
+					<span id="Figured_Bass">
+						Figured Bass
+					</span>
+				</h3>
+				<p>
+					Play a an alternating, randomized bass-line of 2 motifs, for 3 beats and rest for the 4th. Also play a steady closed hi-hat simultaneously.
+				</p>
+				<pre><code>  use MIDI::Drummer::Tiny ();
+  use MIDI::Util qw(set_chan_patch);
+  use Music::Duration::Partition ();
+  use Music::Scales qw(get_scale_MIDI);
+  use Music::VoiceGen ();
+
+  my $d = MIDI::Drummer::Tiny-&gt;new(file =&gt; 'figured.mid');
+
+  $d-&gt;sync(
+      \&amp;beat, # must come first so the channel is 9
+      \&amp;bass,
+  );
+
+  $d-&gt;write;
+
+  sub beat {
+      for my $n (1 .. 8) {
+          $d-&gt;note($d-&gt;quarter, $d-&gt;closed_hh) for 1 .. 4;
+      }
+  }
+
+  sub bass {
+      set_chan_patch($d-&gt;score, 0, 35); # fretless bass on channel 0
+
+      my $mdp = Music::Duration::Partition-&gt;new(
+          size =&gt; 3,
+          pool =&gt; [qw(qn en sn)],
+      );
+
+      my @motifs = $mdp-&gt;motifs(2);
+
+      my @pitches = get_scale_MIDI('A', 2, 'pminor');
+
+      my $voice = Music::VoiceGen-&gt;new(
+          pitches   =&gt; \@pitches,
+          intervals =&gt; [qw(-4 -3 -2 2 3 4)],
+      );
+
+      my @notes1 = map { $voice-&gt;rand } $motifs[0]-&gt;@*;
+
+      for my $i (1 .. 8) {
+          if ($i % 2) {
+              $mdp-&gt;add_to_score($d-&gt;score, $motifs[0], \@notes1);
+          }
+          else {
+              my @notes2 = map { $voice-&gt;rand } $motifs[1]-&gt;@*;
+              $mdp-&gt;add_to_score($d-&gt;score, $motifs[1], \@notes2);
+          }
+
+          $d-&gt;rest($d-&gt;quarter);
+      }
+  }</code></pre>
+				<h3>
+					<span id="7/8_Time">
+						7/8 Time
+					</span>
+				</h3>
+				<p>
+					In
+					<code>
+						x/8
+					</code>
+					time, the Music::Duration::Partition
+					<code>
+						size
+					</code>
+					must be the number of beats (i.e. 7 here) divided by 2.
+				</p>
+				<pre><code>  use MIDI::Drummer::Tiny ();
+  use MIDI::Util qw(set_chan_patch);
+  use Music::Duration::Partition ();
+  use Music::Scales qw(get_scale_MIDI);
+  use Music::VoiceGen ();
+
+  my $d = MIDI::Drummer::Tiny-&gt;new(
+      file      =&gt; 'odd-meter.mid',
+      bpm       =&gt; 90,
+      signature =&gt; '7/8',
+      bars      =&gt; 8,
+  );
+
+  $d-&gt;sync(
+      \&amp;drums,
+      \&amp;bass,
+  );
+
+  $d-&gt;write;
+
+  sub drums {
+      $d-&gt;metronome78($d-&gt;bars * 2);
+  }
+
+  sub bass {
+      set_chan_patch($d-&gt;score, 0, 35);
+
+      my $mdp = Music::Duration::Partition-&gt;new(
+          size   =&gt; 3.5, # = 7/2
+          pool   =&gt; [qw(qn en)],
+          groups =&gt; [   1, 2  ],
+      );
+      my $motif1 = $mdp-&gt;motif;
+      my $motif2 = $mdp-&gt;motif;
+
+      my @pitches = get_scale_MIDI('C', 1, 'pminor');
+      my @intervals = qw(-3 -2 -1 1 2 3);
+      my $voice = Music::VoiceGen-&gt;new(
+          pitches   =&gt; \@pitches,
+          intervals =&gt; \@intervals,
+      );
+      my @notes1 = map { $voice-&gt;rand } @$motif1;
+      my @notes2 = map { $voice-&gt;rand } @$motif2;
+
+      for my $n (1 .. $d-&gt;bars) {
+          for my $i (0 .. $#$motif1) {
+              $d-&gt;note($motif1-&gt;[$i], $n % 2 ? $notes1[$i] : $notes2[$i]);
+          }
+          for my $i (0 .. $#$motif2) {
+              $d-&gt;note($motif2-&gt;[$i], $n % 2 ? $notes1[$i] : $notes2[$i]);
+          }
+      }
+
+      $d-&gt;note($d-&gt;whole, $pitches[0]);
+  }</code></pre>
+				<h2>
+					<span id="Copyright_and_License">
+						Copyright and License
+					</span>
+				</h2>
+				<p>
+					This software is copyright (c) 2023 by Gene Boggs.
+				</p>
+				<p>
+					This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
+				</p>
+			</article>
+		</main>
+		<div style="height: 150px; overflow: hidden;">
+			<svg preserveaspectratio="none" style="height: 100%; width: 100%;" viewbox="0 0 500 150">
+				<path d="M0.00,49.98 C138.82,121.67 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: rgba(var(--bs-dark-rgb), 1);"></path>
+			</svg>
+		</div>
+		<footer id="bottom">
+			<div class="container">
+				<div class="row">
+					<div class="col-12 col-lg-12">
+						<h2>
+							Contributing
+						</h2>
+						<p>
+							Music-Duration-Partition is an open source project
+							<a href="https://github.com/ology/Music-Duration-Partition">hosted on GitHub</a>
+							— open an issue if you have an idea or find a bug.
+						</p>
+						<p>
+							<img alt="GitHub repo stars" src="https://img.shields.io/github/stars/ology/Music-Duration-Partition?style=social" />
+						</p>
+					</div>
+					<div class="col-12 text-center pt-3">
+						<p>
+							Copyright © 2023 Gene Boggs. All rights reserved.
+						</p>
+					</div>
+				</div>
+			</div>
+		</footer>
+		<a href="#top" id="return-to-top">
+			<i class="fa-solid fa-circle-up"></i>
+		</a>
+		<script src="https://ology.github.io/music-duration-partition-tutorial/assets/scripts/bootstrap.bundle.min.js"></script>
+		<script crossorigin="anonymous" src="//kit.fontawesome.com/6d700b1a29.js"></script>
+		<script src="//unpkg.com/@highlightjs/cdn-assets@11.7.0/highlight.min.js"></script>
+		<script>/* <![CDATA[ */
+			/* ]]> *//* <![CDATA[ */const classy_scroll = function () { const scroll = document.documentElement.scrollTop; const avail = window.screen.availHeight; if ( scroll > 75 ) { document.body.classList.add( 'is-scrolled' ); document.body.classList.remove( 'at-top' ); } else if ( scroll < 25 ) { document.body.classList.remove( 'is-scrolled' ); document.body.classList.add( 'at-top' ); } if ( scroll > avail ) { document.body.classList.add( 'is-scrolled-deeply' ); } else if ( scroll < avail ) { document.body.classList.remove( 'is-scrolled-deeply' ); } }; classy_scroll(); window.addEventListener( 'scroll', classy_scroll ); hljs.highlightAll();
+		/* ]]> */</script>
+	</body>
+</html>

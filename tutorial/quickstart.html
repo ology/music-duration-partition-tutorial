@@ -1,0 +1,276 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat"><html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
+		<title>
+			Music-Duration-Partition — Quick-start
+		</title>
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1680993301" rel="stylesheet" />
+		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
+	</head>
+	<body class="page from-pod" id="top">
+		<header>
+			<nav class="navbar navbar-expand-lg">
+				<div class="container">
+					<a class="navbar-brand" href="https://ology.github.io/music-duration-partition-tutorial/">Music-Duration-Partition</a>
+					<button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse" type="button">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse" id="navbarSupportedContent">
+						<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+							<li class="nav-item">
+								<a class="nav-link" href="https://ology.github.io/music-duration-partition-tutorial/installation.html" rel="related" target="_self">Installation</a>
+							</li>
+							<li class="nav-item dropdown">
+								<a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button">Tutorial</a>
+								<ul class="dropdown-menu">
+									<li>
+										<a class="dropdown-item active" href="https://ology.github.io/music-duration-partition-tutorial/tutorial/quickstart.html" rel="related" target="_self">
+											<i class="fa-solid fa-bicycle"></i>
+											Quick-start
+										</a>
+									</li>
+									<li>
+										<a class="dropdown-item" href="https://ology.github.io/music-duration-partition-tutorial/tutorial/advanced.html" rel="related" target="_self">
+											<i class="fa-solid fa-jet-fighter"></i>
+											Advanced
+										</a>
+									</li>
+								</ul>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="https://metacpan.org/dist/Music-Duration-Partition" rel="related" target="_blank">
+									<i class="fa-solid fa-circle-dot"></i>
+									On CPAN
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="https://github.com/ology/Music-Duration-Partition" rel="related" target="_blank">
+									<i class="fa-brands fa-github"></i>
+									On GitHub
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</header>
+		<main>
+			<div class="heading container py-3">
+				<h1 class="display-2">
+					Quick-start
+				</h1>
+			</div>
+			<article class="container">
+				<span id="___top"></span>
+				<h2>
+					<span id="Version">
+						Version
+					</span>
+				</h2>
+				<p>
+					version 0.0807
+				</p>
+				<h2>
+					<span id="Setup">
+						Setup
+					</span>
+				</h2>
+				<h3>
+					<span id="Import_the_MIDI::Util_Module">
+						Import the MIDI::Util Module
+					</span>
+				</h3>
+				<pre><code>  use MIDI::Util qw(setup_score);</code></pre>
+				<h3>
+					<span id="Import_the_Music::Duration::Partition_Module">
+						Import the Music::Duration::Partition Module
+					</span>
+				</h3>
+				<pre><code>  use Music::Duration::Partition ();</code></pre>
+				<h3>
+					<span id="Import_the_Musical_Scales_Module">
+						Import the Musical Scales Module
+					</span>
+				</h3>
+				<pre><code>  uses Music::Scales qw(get_scale_MIDI);</code></pre>
+				<h3>
+					<span id="Get_a_Score">
+						Get a Score
+					</span>
+				</h3>
+				<pre><code>  my $score = setup_score();</code></pre>
+				<h2>
+					<span id="Object_Instantiation">
+						Object Instantiation
+					</span>
+				</h2>
+				<h3>
+					<span id="Attribute_configuration">
+						Attribute configuration
+					</span>
+				</h3>
+				<pre><code>  my $mdp = Music::Duration::Partition-&gt;new(
+      size      =&gt; 8,
+      pool      =&gt; [qw(hn dqn qn en)],
+      weights   =&gt; [    1,  1, 2, 1 ],
+      groups    =&gt; [    1,  1, 1, 2 ],
+      remainder =&gt; 1,
+      verbose   =&gt; 1,
+  );</code></pre>
+				<h2>
+					<span id="Motifs">
+						Motifs
+					</span>
+				</h2>
+				<h3>
+					<span id="motif()">
+						motif()
+					</span>
+				</h3>
+				<pre><code>  my $a_motif = $mdp-&gt;motif;
+  # e.g. ['qn','en','en','hn','qn','qn','dqn','en']</code></pre>
+				<p>
+					A "motif" is (usually) a short phrase that is used in the development or progression of a piece of music.
+				</p>
+				<p>
+					For this module, a motif is an ordered set of rhythmic durations.
+				</p>
+				<h3>
+					<span id="motifs()">
+						motifs()
+					</span>
+				</h3>
+				<pre><code>  my @motifs = $mdp-&gt;motifs(4);</code></pre>
+				<p>
+					Return a set of motifs.
+				</p>
+				<h2>
+					<span id="Pitches_==_Notes_==_Voices">
+						Pitches == Notes == Voices
+					</span>
+				</h2>
+				<h3>
+					<span id="Get_Some_Pitches">
+						Get Some Pitches
+					</span>
+				</h3>
+				<pre><code>  my @pitches = get_scale_MIDI('C', 4, 'major');</code></pre>
+				<p>
+					Use the scale method to get a set of pitches in the key of C major, in the fourth octave.
+				</p>
+				<h3>
+					<span id="Gather_Voices_at_Random">
+						Gather Voices at Random
+					</span>
+				</h3>
+				<pre><code>  my @voices;
+
+  for my $motif (@motifs) {
+      my @notes;
+
+      for my $i (@$motif) {
+          push @notes, $pitches[ int rand @pitches ];
+      }
+
+      push @voices, \@notes;
+  }</code></pre>
+				<p>
+					Here the voices to be played, are collected and correspond directly to motif entries.
+				</p>
+				<h2>
+					<span id="Finish">
+						Finish
+					</span>
+				</h2>
+				<h3>
+					<span id="add_to_score()">
+						add_to_score()
+					</span>
+				</h3>
+				<pre><code>  for my $i (1 .. 4) {
+      for my $n (0 .. $#motifs) {
+          $mdp-&gt;add_to_score($score, $motifs[$n], $voices[$n]);
+      }
+  }</code></pre>
+				<p>
+					Loop over the indices of the motifs and voices, adding each to the score, repeated four times.
+				</p>
+				<h3>
+					<span id="And_Write">
+						And Write
+					</span>
+				</h3>
+				<pre><code>  $score-&gt;write_score('duration-partition.mid');</code></pre>
+				<p>
+					Write the score out to a MIDI file.
+				</p>
+				<h2>
+					<span id="MIDI_Playback">
+						MIDI Playback
+					</span>
+				</h2>
+				<p>
+					Use the venerable command-line program,
+					<a class="podlinkurl" href="https://timidity.sourceforge.net/|">timidity++</a>
+					, which is likely available through your package manager (e.g. apt, homebrew). You can also use the excellent, cross platform program,
+					<a class="podlinkurl" href="https://www.videolan.org/vlc/|">VLC</a>
+					.
+				</p>
+				<pre><code>  &gt; timidity duration-partition.mid</code></pre>
+				<p>
+					Easy!
+				</p>
+				<h2>
+					<span id="Copyright_and_License">
+						Copyright and License
+					</span>
+				</h2>
+				<p>
+					This software is copyright (c) 2023 by Gene Boggs.
+				</p>
+				<p>
+					This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
+				</p>
+			</article>
+		</main>
+		<div style="height: 150px; overflow: hidden;">
+			<svg preserveaspectratio="none" style="height: 100%; width: 100%;" viewbox="0 0 500 150">
+				<path d="M0.00,49.98 C138.82,121.67 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: rgba(var(--bs-dark-rgb), 1);"></path>
+			</svg>
+		</div>
+		<footer id="bottom">
+			<div class="container">
+				<div class="row">
+					<div class="col-12 col-lg-12">
+						<h2>
+							Contributing
+						</h2>
+						<p>
+							Music-Duration-Partition is an open source project
+							<a href="https://github.com/ology/Music-Duration-Partition">hosted on GitHub</a>
+							— open an issue if you have an idea or find a bug.
+						</p>
+						<p>
+							<img alt="GitHub repo stars" src="https://img.shields.io/github/stars/ology/Music-Duration-Partition?style=social" />
+						</p>
+					</div>
+					<div class="col-12 text-center pt-3">
+						<p>
+							Copyright © 2023 Gene Boggs. All rights reserved.
+						</p>
+					</div>
+				</div>
+			</div>
+		</footer>
+		<a href="#top" id="return-to-top">
+			<i class="fa-solid fa-circle-up"></i>
+		</a>
+		<script src="https://ology.github.io/music-duration-partition-tutorial/assets/scripts/bootstrap.bundle.min.js"></script>
+		<script crossorigin="anonymous" src="//kit.fontawesome.com/6d700b1a29.js"></script>
+		<script src="//unpkg.com/@highlightjs/cdn-assets@11.7.0/highlight.min.js"></script>
+		<script>/* <![CDATA[ */
+			/* ]]> *//* <![CDATA[ */const classy_scroll = function () { const scroll = document.documentElement.scrollTop; const avail = window.screen.availHeight; if ( scroll > 75 ) { document.body.classList.add( 'is-scrolled' ); document.body.classList.remove( 'at-top' ); } else if ( scroll < 25 ) { document.body.classList.remove( 'is-scrolled' ); document.body.classList.add( 'at-top' ); } if ( scroll > avail ) { document.body.classList.add( 'is-scrolled-deeply' ); } else if ( scroll < avail ) { document.body.classList.remove( 'is-scrolled-deeply' ); } }; classy_scroll(); window.addEventListener( 'scroll', classy_scroll ); hljs.highlightAll();
+		/* ]]> */</script>
+	</body>
+</html>
