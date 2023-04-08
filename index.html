@@ -5,7 +5,7 @@
 		<title>
 			Music-Duration-Partition: Partition a Musical Duration into Rhythmic Phrases
 		</title>
-		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1680995439" rel="stylesheet" />
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1680995593" rel="stylesheet" />
 		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
 	</head>
 	<body class="homepage from-markdown" id="top">
@@ -145,9 +145,11 @@ my $mdp = Music::Duration::Partition-&gt;new(
 
 my $motif = $mdp-&gt;motif;
 
-my @pitches = get_scale_MIDI('C', 4, 'major');
+my @scale = get_scale_MIDI('C', 4, 'major');
 
-$mdp-&gt;add_to_score($score, $motif, \@pitches);
+my @voices = map { $scale[ int rand @scale ] } @$motif;
+
+$mdp-&gt;add_to_score($score, $motif, \@voices);
 
 $score-&gt;write_score('duration-partition.mid');</code></pre>
 							</div>
