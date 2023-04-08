@@ -3,9 +3,9 @@
 		<meta charset="utf-8" />
 		<meta content="width=device-width, initial-scale=1" name="viewport" />
 		<title>
-			Music-Duration-Partition: Frobnicate Universes
+			Music-Duration-Partition: Partition a Musical Duration into Rhythmic Phrases
 		</title>
-		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1680993301" rel="stylesheet" />
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1680995081" rel="stylesheet" />
 		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
 	</head>
 	<body class="homepage from-markdown" id="top">
@@ -66,7 +66,7 @@
 							Music-Duration-Partition
 						</h1>
 						<h2>
-							Frobnicate Universes
+							Partition a Musical Duration into Rhythmic Phrases
 						</h2>
 					</div>
 				</div>
@@ -77,15 +77,15 @@
 				</div>
 			</div>
 			<a id="main" name="main"></a>
-			<article class="has-sections has-section-count-6">
+			<article class="has-sections has-section-count-5">
 				<section>
 					<div class="container">
 						<div class="text-center">
 							<h2 class="display-1">
-								Module Description
+								Description
 							</h2>
 							<p class="lead">
-								Music::Duration::Partition is a Perl module that implements ...
+								Music::Duration::Partition is a Perl module that partitions a musical duration into randomized rhythmic phrases.
 							</p>
 							<p class="pt-5">
 								<img alt="GitHub Issues" src="https://img.shields.io/github/issues/ology/Music-Duration-Partition" title="GitHub Issues" />
@@ -97,40 +97,28 @@
 					<div class="container">
 						<div class="text-center">
 							<h2 class="display-1">
-								Title 1
+								Features of the Module
 							</h2>
 							<h3>
-								Blah
+								Durations
 							</h3>
 							<p>
-								Lorem ispum, etc.
+								MIDI-Perl length pool aliases, 'hn' = half-note, 'qn' = quarter-note, 'ten' = triplet eighth note, etc.
+							</p>
+							<p>
+								Fine-grained duration control specification with 'd' . number of "ticks." And there are 96 ticks per quarter-note, by default.
 							</p>
 							<h3>
-								Blah
+								Motif Generation
 							</h3>
 							<p>
-								Lorem ispum, etc.
-							</p>
-						</div>
-					</div>
-				</section>
-				<section>
-					<div class="container">
-						<div class="text-center">
-							<h2 class="display-1">
-								Title 2
-							</h2>
-							<h3>
-								Blah
-							</h3>
-							<p>
-								Lorem ispum, etc.
+								Create single or multiple rhythmic phrases ("motifs").
 							</p>
 							<h3>
-								Blah
+								Score Interaction
 							</h3>
 							<p>
-								Lorem ispum, etc.
+								Handy method to add a motif and corresponding voices to a score.
 							</p>
 						</div>
 					</div>
@@ -138,28 +126,30 @@
 				<section>
 					<div class="container">
 						<h2 class="display-1 text-center pb-3">
-							Quick Examples
+							Quick Example
 						</h2>
 						<div class="row">
 							<div class="col-lg-6">
 								<h3>
 									Example 1
 								</h3>
-								<pre><code>use Music::Duration::Partition ();
+								<pre><code>use MIDI::Util qw(setup_score);
+use Music::Duration::Partition ();
+use Music::Scales qw(get_scale_MIDI);
 
-my $obj = Music::Duration::Partition-&gt;new;
+my $score = setup_score();
 
-</code></pre>
-							</div>
-							<div class="col-lg-6">
-								<h3>
-									Example 2
-								</h3>
-								<pre><code>use Music::Duration::Partition ();
+my $mdp = Music::Duration::Partition-&gt;new(
+    pool =&gt; [qw(hn dqn qn en)],
+);
 
-my $obj = Music::Duration::Partition-&gt;new;
+my $motif = $mdp-&gt;motif;
 
-</code></pre>
+my @pitches = get_scale_MIDI('C', 4, 'major');
+
+$mdp-&gt;add_to_score($score, $motif, \@pitches);
+
+$score-&gt;write_score('duration-partition.mid');</code></pre>
 							</div>
 						</div>
 					</div>
