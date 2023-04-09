@@ -5,7 +5,7 @@
 		<title>
 			Music-Duration-Partition — Quick-start
 		</title>
-		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1680995593" rel="stylesheet" />
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1681004165" rel="stylesheet" />
 		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
 	</head>
 	<body class="page from-pod" id="top">
@@ -69,7 +69,7 @@
 					</span>
 				</h2>
 				<p>
-					version 0.0807
+					version 0.0810
 				</p>
 				<h2>
 					<span id="Setup">
@@ -77,23 +77,13 @@
 					</span>
 				</h2>
 				<h3>
-					<span id="Import_the_MIDI::Util_Module">
-						Import the MIDI::Util Module
+					<span id="Import_Modules">
+						Import Modules
 					</span>
 				</h3>
-				<pre><code>  use MIDI::Util qw(setup_score);</code></pre>
-				<h3>
-					<span id="Import_the_Music::Duration::Partition_Module">
-						Import the Music::Duration::Partition Module
-					</span>
-				</h3>
-				<pre><code>  use Music::Duration::Partition ();</code></pre>
-				<h3>
-					<span id="Import_the_Musical_Scales_Module">
-						Import the Musical Scales Module
-					</span>
-				</h3>
-				<pre><code>  uses Music::Scales qw(get_scale_MIDI);</code></pre>
+				<pre><code>  use MIDI::Util qw(setup_score);
+  use Music::Duration::Partition ();
+  use Music::Scales qw(get_scale_MIDI);</code></pre>
 				<h3>
 					<span id="Get_a_Score">
 						Get a Score
@@ -101,15 +91,10 @@
 				</h3>
 				<pre><code>  my $score = setup_score();</code></pre>
 				<h2>
-					<span id="Object_Instantiation">
-						Object Instantiation
+					<span id="Instantiate_an_object">
+						Instantiate an object
 					</span>
 				</h2>
-				<h3>
-					<span id="Attribute_configuration">
-						Attribute configuration
-					</span>
-				</h3>
 				<pre><code>  my $mdp = Music::Duration::Partition-&gt;new(
       size      =&gt; 8,
       pool      =&gt; [qw(hn dqn qn en)],
@@ -227,7 +212,7 @@
 					</span>
 				</h2>
 				<p>
-					This software is copyright (c) 2023 by Gene Boggs.
+					This software is copyright (c) 2019-2023 by Gene Boggs.
 				</p>
 				<p>
 					This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
