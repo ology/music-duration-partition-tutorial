@@ -5,7 +5,7 @@
 		<title>
 			Music-Duration-Partition — Advanced
 		</title>
-		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1681006065" rel="stylesheet" />
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1681008675" rel="stylesheet" />
 		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
 	</head>
 	<body class="page from-pod" id="top">
@@ -69,7 +69,7 @@
 					</span>
 				</h2>
 				<p>
-					version 0.0811
+					version 0.0812
 				</p>
 				<h2>
 					<span id="Usage_Examples">
@@ -82,7 +82,7 @@
 					</span>
 				</h3>
 				<p>
-					By shuffling a single generated motif, you can get the permutations of the durations.
+					By shuffling a single generated motif, you can get permutations of the durations.
 				</p>
 				<pre><code>  use List::Util qw(shuffle);
   use MIDI::Util qw(setup_score);
@@ -150,7 +150,7 @@
       $score-&gt;r('wn');
   }
 
-  $score-&gt;write_score('shuffled.mid');
+  $score-&gt;write_score('voss.mid');
 
   sub voss {
       my ($note, $octave, $named) = @_;
@@ -168,7 +168,7 @@
 					</span>
 				</h3>
 				<p>
-					Triplet durations will be twice as likely to be chosen, and be played in groups of 3.
+					Triplet durations will be twice as likely to be chosen, and will be played in groups of 3.
 				</p>
 				<pre><code>  use MIDI::Util qw(setup_score);
   use Music::Duration::Partition ();
@@ -194,7 +194,9 @@
       }
   }
 
-  $score-&gt;n('wn', $scale[0]);</code></pre>
+  $score-&gt;n('wn', $scale[0]);
+
+  $score-&gt;write_score('weighted-grouped.mid');</code></pre>
 				<h3>
 					<span id="Figured_Bass">
 						Figured Bass
@@ -306,22 +308,19 @@
       my $motif1 = $mdp-&gt;motif;
       my $motif2 = $mdp-&gt;motif;
 
-      my @pitches = get_scale_MIDI('C', 1, 'pminor');
+      my @pitches = get_scale_MIDI('C', 2, 'pminor');
       my @intervals = qw(-3 -2 -1 1 2 3);
       my $voice = Music::VoiceGen-&gt;new(
           pitches   =&gt; \@pitches,
           intervals =&gt; \@intervals,
       );
-      my @notes1 = map { $voice-&gt;rand } @$motif1;
-      my @notes2 = map { $voice-&gt;rand } @$motif2;
+      my @voices1 = map { $voice-&gt;rand } @$motif1;
 
       for my $n (1 .. $d-&gt;bars) {
-          for my $i (0 .. $#$motif1) {
-              $d-&gt;note($motif1-&gt;[$i], $n % 2 ? $notes1[$i] : $notes2[$i]);
-          }
-          for my $i (0 .. $#$motif2) {
-              $d-&gt;note($motif2-&gt;[$i], $n % 2 ? $notes1[$i] : $notes2[$i]);
-          }
+          $mdp-&gt;add_to_score($score, $motif1, \@voices1);
+
+          my @voices2 = map { $voice-&gt;rand } @$motif2;
+          $mdp-&gt;add_to_score($score, $motif2, \@voices2);
       }
 
       $d-&gt;note($d-&gt;whole, $pitches[0]);
