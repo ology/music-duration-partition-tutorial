@@ -5,7 +5,7 @@
 		<title>
 			Music-Duration-Partition — Advanced
 		</title>
-		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1681008675" rel="stylesheet" />
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1681194536" rel="stylesheet" />
 		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
 	</head>
 	<body class="page from-pod" id="top">
@@ -69,7 +69,7 @@
 					</span>
 				</h2>
 				<p>
-					version 0.0812
+					version 0.0813
 				</p>
 				<h2>
 					<span id="Usage_Examples">
@@ -95,7 +95,6 @@
 
   # instantiate a 4 beat phrase generator
   my $mdp = Music::Duration::Partition-&gt;new(
-      size =&gt; 4,
       pool =&gt; [qw(qn en sn)],
       #pool =&gt; [qw(twn thn tqn ten tsn)],
   );
@@ -133,13 +132,12 @@
   my $score = setup_score(bpm =&gt; 90);
 
   my $mdp = Music::Duration::Partition-&gt;new(
-      size =&gt; 4,
       pool =&gt; [qw(qn en sn)],
   );
 
   my $motif = $mdp-&gt;motif;
 
-  # get the scale and compute the generating function
+  # get the scale and compute a generating function
   my ($scale, $genf) = voss('A', 5, 'minor');
 
   for my $i (1 .. 8) {
@@ -301,12 +299,12 @@
       set_chan_patch($d-&gt;score, 0, 35);
 
       my $mdp = Music::Duration::Partition-&gt;new(
-          size   =&gt; 3.5, # = 7/2
+          size   =&gt; 3.5, # == 7/2
           pool   =&gt; [qw(qn en)],
           groups =&gt; [   1, 2  ],
       );
-      my $motif1 = $mdp-&gt;motif;
-      my $motif2 = $mdp-&gt;motif;
+
+      my ($motif1, $motif2) = $mdp-&gt;motifs(2);
 
       my @pitches = get_scale_MIDI('C', 2, 'pminor');
       my @intervals = qw(-3 -2 -1 1 2 3);
@@ -316,9 +314,11 @@
       );
       my @voices1 = map { $voice-&gt;rand } @$motif1;
 
+      # add 2 bars to the score
       for my $n (1 .. $d-&gt;bars) {
           $mdp-&gt;add_to_score($score, $motif1, \@voices1);
 
+          # get a fresh set of voices
           my @voices2 = map { $voice-&gt;rand } @$motif2;
           $mdp-&gt;add_to_score($score, $motif2, \@voices2);
       }

@@ -5,7 +5,7 @@
 		<title>
 			Music-Duration-Partition — Quick-start
 		</title>
-		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1681008675" rel="stylesheet" />
+		<link href="https://ology.github.io/music-duration-partition-tutorial/assets/styles/main.css?v=1681194536" rel="stylesheet" />
 		<link href="//unpkg.com/@highlightjs/cdn-assets@11.7.0/styles/github.min.css" rel="stylesheet" />
 	</head>
 	<body class="page from-pod" id="top">
@@ -69,7 +69,7 @@
 					</span>
 				</h2>
 				<p>
-					version 0.0812
+					version 0.0813
 				</p>
 				<h2>
 					<span id="Setup">
@@ -90,27 +90,27 @@
 					</span>
 				</h3>
 				<pre><code>  my $score = setup_score();</code></pre>
-				<h2>
-					<span id="Instantiate_an_object">
-						Instantiate an object
+				<h3>
+					<span id="Construct_an_object">
+						Construct an object
 					</span>
-				</h2>
+				</h3>
 				<pre><code>  my $mdp = Music::Duration::Partition-&gt;new(
-      size      =&gt; 8,
-      pool      =&gt; [qw(hn dqn qn en)],
-      weights   =&gt; [   1, 1,  2, 1 ],
-      groups    =&gt; [   1, 1,  1, 2 ],
-      remainder =&gt; 1,
-      verbose   =&gt; 1,
+      size    =&gt; 8, # 2 measures in 4/4
+      pool    =&gt; [qw(hn dqn qn en)],
+      verbose =&gt; 1,
   );</code></pre>
+				<p>
+					More attributes may be set, but we'll leave that for the advanced tutorial.
+				</p>
 				<h2>
-					<span id="Motifs">
-						Motifs
+					<span id="Phrases">
+						Phrases
 					</span>
 				</h2>
 				<h3>
-					<span id="motif()">
-						motif()
+					<span id="A_single_motif()">
+						A single motif()
 					</span>
 				</h3>
 				<pre><code>  my $a_motif = $mdp-&gt;motif;
@@ -122,8 +122,8 @@
 					For this module, a motif is an ordered set of rhythmic durations.
 				</p>
 				<h3>
-					<span id="motifs()">
-						motifs()
+					<span id="Multiple_motifs()">
+						Multiple motifs()
 					</span>
 				</h3>
 				<pre><code>  my @motifs = $mdp-&gt;motifs(4);</code></pre>
@@ -131,13 +131,13 @@
 					Return a set of motifs.
 				</p>
 				<h2>
-					<span id="Pitches_==_Notes_==_Voices">
-						Pitches == Notes == Voices
+					<span id="Pitches_and_Voices">
+						Pitches and Voices
 					</span>
 				</h2>
 				<h3>
-					<span id="Get_Some_Pitches">
-						Get Some Pitches
+					<span id="Define_pitches">
+						Define pitches
 					</span>
 				</h3>
 				<pre><code>  my @pitches = get_scale_MIDI('C', 4, 'major');</code></pre>
@@ -145,8 +145,8 @@
 					Use the scale method to get a set of pitches in the key of C major, in the fourth octave.
 				</p>
 				<h3>
-					<span id="Gather_Voices_at_Random">
-						Gather Voices at Random
+					<span id="Collect_voices">
+						Collect voices
 					</span>
 				</h3>
 				<pre><code>  my @voices;
@@ -161,7 +161,7 @@
       push @voices, \@notes;
   }</code></pre>
 				<p>
-					Here the voices to be played, are collected and correspond directly to motif entries.
+					Here the voices to be played, are collected and correspond directly to the motifs.
 				</p>
 				<h2>
 					<span id="Finish">
@@ -204,7 +204,7 @@
 				</p>
 				<pre><code>  &gt; timidity duration-partition.mid</code></pre>
 				<p>
-					Easy!
+					Voila!
 				</p>
 				<h2>
 					<span id="Copyright_and_License">
